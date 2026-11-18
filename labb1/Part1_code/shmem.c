@@ -42,15 +42,19 @@ int main(int argc, char **argv)
 			/* write to shmem */
 			var1++;
 			while (shmp->elements == 10)
-				; /* busy wait until queue no longer full */
+				; /* Wait until queue no longer full */
+
 			printf("Sending %d\n", var1);
 			fflush(stdout);
+
+			// Put var into buffer at end, increment end, increment number of elements
 			shmp->buffer[shmp->end] = var1;
 			shmp->end = (shmp->end + 1) % 10;
 			shmp->elements++;
 			shmp->empty = 1;
-			usleep(100000 + rand() % 400001);
+			usleep(100000 + rand() % 400001); // 0,1-0,5s sleep timer
 		}
+		// Async like wait for the other process to finnish emptying the buffer followed by
 		wait(NULL);
 		shmdt(addr);
 		shmctl(shmid, IPC_RMID, shm_buf);
@@ -62,14 +66,16 @@ int main(int argc, char **argv)
 		{
 			/* read from shmem */
 			while (shmp->elements == 0)
-				; /* busy wait until queue not empty */
+				; /* Wait until queue not empty */
+
+			// Take item from buffer at start, move start 1 step, decrease number of elements
 			var2 = shmp->buffer[shmp->start];
 			shmp->start = (shmp->start + 1) % 10;
 			shmp->elements--;
 			shmp->empty = 0;
 			printf("Received %d\n", var2);
 			fflush(stdout);
-			usleep(200000 + rand() % 1800001);
+			usleep(200000 + rand() % 1800001); // 0,2-2s sleep timer
 		}
 		shmdt(addr);
 		shmctl(shmid, IPC_RMID, shm_buf);
