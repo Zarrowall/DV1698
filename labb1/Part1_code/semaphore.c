@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <fcntl.h> /* For O_* constants */
+#include <wait.h>
 
 const char *semName1 = "my_sema1";
 const char *semName2 = "my_sema2";
@@ -16,10 +17,13 @@ int main(int argc, char **argv)
 	int i, status;
 
 	pid = fork();
-	if (pid) {
-		for (i = 0; i < 100; i++) {
+	if (pid)
+	{
+		for (i = 0; i < 100; i++)
+		{
 			sem_wait(sem_id1);
-			putchar('A'); fflush(stdout);
+			putchar('A');
+			fflush(stdout);
 			sem_post(sem_id2);
 		}
 		sem_close(sem_id1);
@@ -27,10 +31,14 @@ int main(int argc, char **argv)
 		wait(&status);
 		sem_unlink(semName1);
 		sem_unlink(semName2);
-	} else {
-		for (i = 0; i < 100; i++) {
+	}
+	else
+	{
+		for (i = 0; i < 100; i++)
+		{
 			sem_wait(sem_id2);
-			putchar('B'); fflush(stdout);
+			putchar('B');
+			fflush(stdout);
 			sem_post(sem_id1);
 		}
 		sem_close(sem_id1);
