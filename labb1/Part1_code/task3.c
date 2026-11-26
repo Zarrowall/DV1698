@@ -19,8 +19,8 @@ int sem1Value, sem2Value;
 
 int main(int argc, char **argv)
 {
-    sem_unlink(semName1);
-    sem_unlink(semName2);
+    // sem_unlink(semName1);
+    // sem_unlink(semName2);
     int status;
     struct shm_struct
     {
